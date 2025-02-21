@@ -1,5 +1,5 @@
 
-import { GetProductBySlug } from "@/lib/actions/product-actions";
+import { GetProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
 import { Badge } from '@/components/ui/badge'
 import { Button } from "@/components/ui/button";

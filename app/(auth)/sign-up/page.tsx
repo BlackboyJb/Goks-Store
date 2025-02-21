@@ -1,0 +1,49 @@
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import Image from "next/image";
+import { Metadata } from "next";
+import Link from "next/link";
+import { APP_NAME } from "@/lib/constants";
+import { auth } from "@/auth";
+import { redirect } from "next/navigation";
+import CredentialSignUpPage from "./credentials-sign-up-form";
+
+export const metadata: Metadata = {
+    title: "Sign Up",
+};
+
+const SignUpPage = async (props: {
+    searchParams: Promise<{
+        callbackUrl: string
+    }>
+}) => {
+    const { callbackUrl } = await props.searchParams;
+    const session = await auth()
+
+    if (session) {
+        return redirect(callbackUrl || '/')
+    }
+    return (<div> <div className="w-full max-w-md mx-auto">
+        <Card>
+            <CardHeader className="space-y-4">
+                <Link href="/" className="flex-center">
+                    <Image
+                        src="/images/logo.jpg"
+                        width={100}
+                        height={100}
+                        alt={`${APP_NAME} logo`}
+                        className="dark:invert"
+                        priority={true}
+                    ></Image>
+                </Link>
+                <CardTitle className="text-center">Create your Account</CardTitle>
+                <CardDescription className="text-center">Enter your Information below to sign Up</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+                {/* Form Here */}
+                <CredentialSignUpPage />
+            </CardContent>
+        </Card>
+    </div></div>);
+}
+
+export default SignUpPage;

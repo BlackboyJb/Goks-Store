@@ -7,7 +7,7 @@ import { ThemeProvider } from 'next-themes'
 const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: {
-    template: `%$ | GokS Store`,
+    template: `%$ | Goks Store`,
     default: APP_NAME
   },
   description: APP_DESCRIPTION,

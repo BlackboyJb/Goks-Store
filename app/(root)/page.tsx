@@ -1,5 +1,5 @@
 import ProductList from "@/components/shared/product/product-list";
-import { GetLatestProduct } from "@/lib/actions/product-actions";
+import { GetLatestProduct } from "@/lib/actions/product.actions";
 
 const HomePage = async () => {
   const latestProduct = await GetLatestProduct()
