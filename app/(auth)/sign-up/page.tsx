@@ -22,7 +22,7 @@ const SignUpPage = async (props: {
     if (session) {
         return redirect(callbackUrl || '/')
     }
-    return (<div> <div className="w-full max-w-md mx-auto">
+    return (<div className="w-full max-w-md mx-auto">
         <Card>
             <CardHeader className="space-y-4">
                 <Link href="/" className="flex-center">
@@ -35,7 +35,7 @@ const SignUpPage = async (props: {
                         priority={true}
                     ></Image>
                 </Link>
-                <CardTitle className="text-center">Create your Account</CardTitle>
+                <CardTitle className="text-center">Create Account</CardTitle>
                 <CardDescription className="text-center">Enter your Information below to sign Up</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -43,7 +43,7 @@ const SignUpPage = async (props: {
                 <CredentialSignUpPage />
             </CardContent>
         </Card>
-    </div></div>);
+    </div>);
 }
 
 export default SignUpPage;

@@ -24,21 +24,20 @@ export const insertProductSchemas = z.object({
 
 //schema for User Sign in
 export const signInSchema = z.object({
-  email: z.string().email("invalid Email Adress"),
+  email: z.string().email("invalid Email Address"),
   password: z.string().min(6, "Passowrd must be least six Characters"),
 });
-
-//schema for User Sign up
+// Schema for signing up a user
 export const signUpSchema = z
   .object({
-    name: z.string().min(3, "Passoword must be least three Characters"),
-    email: z.string().email("invalid Email Address"),
-    password: z.string().min(6, "Passowrod must be least six Characters"),
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
     confirmPassword: z
       .string()
-      .min(6, "Confirm Password must be least six Characters"),
+      .min(6, "Confirm password must be at least 6 characters"),
   })
   .refine((data) => data.password === data.confirmPassword, {
-    message: "Password do not Match",
+    message: "Passwords don't match",
     path: ["confirmPassword"],
   });

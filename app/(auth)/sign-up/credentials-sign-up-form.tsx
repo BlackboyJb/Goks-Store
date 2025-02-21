@@ -55,16 +55,18 @@ const CredentialSignUpPage = () => {
                     name="password"
                     type="password"
                     autoComplete="password"
+                    required
                     defaultValue={SignUpDefaultValues.password}
                 />
             </div>
             <div>
                 <Label htmlFor="confirmPassword"> Confirm Password</Label>
                 <Input
-                    id="confrimpassword"
-                    name="confirmpassword"
+                    id="confrimPassword"
+                    name="confirmPassword"
                     type="password"
-                    autoComplete="confirmpassword"
+                    autoComplete="confirmPassword"
+                    required
                     defaultValue={SignUpDefaultValues.confirmPassword}
                 />
             </div>
