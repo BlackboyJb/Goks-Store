@@ -2,11 +2,11 @@
 import { GetProductBySlug } from "@/lib/actions/product.actions";
 import { notFound } from "next/navigation";
 import { Badge } from '@/components/ui/badge'
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import ProductPrice from "@/components/shared/product/product-price";
 import ProductImages from "@/components/shared/product/product-images";
 import GoBackButton from "@/helpers/GoBackButton";
+import AddtoCart from "@/components/shared/product/add-to-cart";
 
 
 
@@ -55,7 +55,14 @@ const ProductDetailsPage = async (props: { params: Promise<{ slug: string }> }) 
                                 <div>status</div>
                                 {product.stock > 0 ? (<Badge className="text-1xl" variant='outline'>In Stock</Badge>) : (<Badge variant='destructive'>Out of Stock</Badge>)}
                             </div>
-                            {product.stock > 0 && (<div className="flex-center"><Button className="w-full">Add to Cart</Button></div>)}
+                            {product.stock > 0 && (<div className="flex-center"><AddtoCart item={{
+                                productId: product.id,
+                                name: product.name,
+                                slug: product.slug,
+                                price: product.price,
+                                qty: 1,
+                                image: product.images![0]
+                            }} /></div>)}
                         </CardContent>
                     </Card>
                 </div>
