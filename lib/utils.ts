@@ -11,12 +11,9 @@ export function convertToPlainObject<T>(value: T): T {
   return JSON.parse(JSON.stringify(value));
 }
 
-//format number in decimal places
 export function formatNumbertoDecimal(num: number): string {
-  const [int, decimal] = num.toString().split(".");
-  return decimal ? `${int}.${decimal.padEnd(2, "0")}` : `${int}.00`;
+  return num.toFixed(2);
 }
-
 //format errors
 export function formatError(error: any) {
   if (error.name === "ZodError") {
@@ -40,3 +37,20 @@ export function formatError(error: any) {
       : JSON.stringify(error.message);
   }
 }
+
+//Round Number to 2 decimal places
+export function round2(value: number | string) {
+  if (typeof value === "number") {
+    return Math.round(((value + Number.EPSILON) * 100) / 100);
+  } else if (typeof value === "string") {
+    return Math.round(((Number(value) + Number.EPSILON) * 100) / 100);
+  } else {
+    throw new Error("Value is not a number or string");
+  }
+}
+
+// //format number in decimal places
+// export function formatNumbertoDecimal(num: number): string {
+//   const [int, decimal] = num.toString().split(".");
+//   return decimal ? `${int}.${decimal.padEnd(2, "0")}` : `${int}.00`;
+// }

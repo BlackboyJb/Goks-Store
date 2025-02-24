@@ -1,13 +1,12 @@
 import { z } from "zod";
-import { formatNumbertoDecimal } from "./utils";
+// import { formatNumbertoDecimal } from "./utils";
 
 const currency = z
   .string()
   .refine(
-    (value) => /^\d+(\.\d{2})?₦/.test(formatNumbertoDecimal(Number(value))),
+    (value) => /^\d+(\.\d{2})?$/.test(value),
     "Price Must have two Decimal Places"
   );
-
 ///schema for inserting Product
 export const insertProductSchemas = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -62,3 +61,10 @@ export const InsertCartSchema = z.object({
   sessionCartId: z.string().min(1, "Session Cart Id is Required"),
   userId: z.string().optional().nullable(),
 });
+
+// const currency = z
+//   .string()
+//   .refine(
+//     (value) => /^\d+(\.\d{2})?₦/.test(formatNumbertoDecimal(Number(value))),
+//     "Price Must have two Decimal Places"
+//   );

@@ -1,7 +1,7 @@
-import { Pool, neonConfig } from '@neondatabase/serverless';
-import { PrismaNeon } from '@prisma/adapter-neon';
-import { PrismaClient } from '@prisma/client';
-import ws from 'ws';
+import { Pool, neonConfig } from "@neondatabase/serverless";
+import { PrismaNeon } from "@prisma/adapter-neon";
+import { PrismaClient } from "@prisma/client";
+import ws from "ws";
 
 // Sets up WebSocket connections, which enables Neon to use WebSocket communication.
 neonConfig.webSocketConstructor = ws;
@@ -19,7 +19,7 @@ export const prisma = new PrismaClient({ adapter }).$extends({
     product: {
       price: {
         compute(product) {
-          return product.price.toString();
+          return product.price.toFixed(2);
         },
       },
       rating: {

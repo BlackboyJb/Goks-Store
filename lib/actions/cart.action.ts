@@ -2,12 +2,29 @@
 
 import { CartItem } from "@/types";
 import { cookies } from "next/headers";
-import { convertToPlainObject, formatError } from "../utils";
+import { convertToPlainObject, formatError, round2 } from "../utils";
 import { auth } from "@/auth";
 import { prisma } from "@/db/prisma";
-import { cartItemSchema } from "../validators";
+import { cartItemSchema, InsertCartSchema } from "../validators";
 
-export async function addToCartItem(data: cartItem) {
+///caculate cart Prices
+const calcPrice = (items: CartItem[]) => {
+  const itemsPrice = round2(
+      items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
+    ),
+    shippingPrice = round2(itemsPrice > 100 ? 0 : 10),
+    taxPrice = round2(0.15 * itemsPrice),
+    totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+
+  return {
+    itemsPrice: itemsPrice.toFixed(2),
+    shippingPrice: shippingPrice.toFixed(2),
+    taxPrice: taxPrice.toFixed(2),
+    totalPrice: totalPrice.toFixed(2),
+  };
+};
+
+export async function addToCartItem(data: CartItem) {
   try {
     //check for the cart cookie
     const sessionCartId = (await cookies()).get("sessionCartId")?.value;
@@ -23,12 +40,25 @@ export async function addToCartItem(data: cartItem) {
     // Parse and validate item
     const item = cartItemSchema.parse(data);
 
-    //TESTING
-    console.log({
-      sessionCartId: sessionCartId,
-      userId: userId,
-      itemRequested: item,
+    //find product in database
+    const product = await prisma.product.findFirst({
+      where: { id: item.productId },
     });
+
+    if (!product) throw new Error("Product not Found");
+
+    if (!cart) {
+      //create new object
+      const createNewCart = InsertCartSchema.parse({
+        userId: userId,
+        item: [item],
+        sessionCartId: sessionCartId,
+        ...calcPrice([item]),
+      });
+
+      console.log(createNewCart);
+    }
+
     return {
       success: true,
       message: "Item Added to Cart",
@@ -58,15 +88,12 @@ export async function getMyCart() {
 
   if (!cart) return undefined;
 
-  const toTwoDecimalString = (num) =>
-    typeof num === "number" ? num.toFixed(2) : parseFloat(num).toFixed(2);
-
   return convertToPlainObject({
     ...cart,
     items: cart.items as CartItem[],
-    itemsPrice: toTwoDecimalString(cart.itemsPrice),
-    totalPrice: toTwoDecimalString(cart.totalPrice),
-    shippingPrice: toTwoDecimalString(cart.shippingPrice),
-    taxPrice: toTwoDecimalString(cart.taxPrice),
+    itemsPrice: cart.itemsPrice.toString(),
+    shippingPrice: cart.shippingPrice.toString(),
+    taxPrice: cart.taxPrice.toString(),
+    totalPrice: cart.totalPrice.toString(),
   });
 }
