@@ -3,9 +3,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import { prisma } from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
-import type { NextAuthConfig } from "next-auth";
+import { authConfig } from "./auth.config";
+// import type { NextAuthConfig } from "next-auth";
 // import { cookies} from "next/headers";
-import { NextResponse } from "next/server";
+// import { NextResponse } from "next/server";
 
 export const config = {
   pages: {
@@ -13,7 +14,7 @@ export const config = {
     error: "/sign-in",
   },
   session: {
-    strategy: "jwt",
+    strategy: "jwt" as const,
     maxAge: 30 * 24 * 60 * 60,
   },
   adapter: PrismaAdapter(prisma),
@@ -56,6 +57,7 @@ export const config = {
     }),
   ],
   callbacks: {
+    ...authConfig.callbacks,
     async session({ session, user, trigger, token }: any) {
       ////set the user ID from the token
       session.user.id = token.sub;
@@ -84,30 +86,30 @@ export const config = {
       }
       return token;
     },
-    authorized({ request, auth }: any) {
-      ///check for session cart cookie
-      if (!request.cookies.get("sessionCartId")) {
-        //Generate new session cartId Cookie
-        const sessionCartId = crypto.randomUUID();
+    // authorized({ request, auth }: any) {
+    //   ///check for session cart cookie
+    //   if (!request.cookies.get("sessionCartId")) {
+    //     //Generate new session cartId Cookie
+    //     const sessionCartId = crypto.randomUUID();
 
-        //Clone Request Headers
-        const newRequestHeaders = new Headers(request.headers);
+    //     //Clone Request Headers
+    //     const newRequestHeaders = new Headers(request.headers);
 
-        //Create new Response and add New Headers
-        const response = NextResponse.next({
-          request: {
-            headers: newRequestHeaders,
-          },
-        });
+    //     //Create new Response and add New Headers
+    //     const response = NextResponse.next({
+    //       request: {
+    //         headers: newRequestHeaders,
+    //       },
+    //     });
 
-        //set newly generated sessionCartId in the response cookies
-        response.cookies.set("sessionCartId", sessionCartId);
-        return response;
-      } else {
-        return true;
-      }
-    },
+    //     //set newly generated sessionCartId in the response cookies
+    //     response.cookies.set("sessionCartId", sessionCartId);
+    //     return response;
+    //   } else {
+    //     return true;
+    //   }
+    // },
   },
-} satisfies NextAuthConfig;
+};
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
