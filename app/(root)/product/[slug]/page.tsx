@@ -7,7 +7,7 @@ import ProductPrice from "@/components/shared/product/product-price";
 import ProductImages from "@/components/shared/product/product-images";
 import GoBackButton from "@/helpers/GoBackButton";
 import AddtoCart from "@/components/shared/product/add-to-cart";
-
+import { getMyCart } from "@/lib/actions/cart.action";
 
 
 
@@ -17,6 +17,8 @@ const ProductDetailsPage = async (props: { params: Promise<{ slug: string }> }) 
 
     const product = await GetProductBySlug(slug)
     if (!product) notFound()
+
+    const cart = await getMyCart()
 
 
 
@@ -55,14 +57,16 @@ const ProductDetailsPage = async (props: { params: Promise<{ slug: string }> }) 
                                 <div>status</div>
                                 {product.stock > 0 ? (<Badge className="text-1xl" variant='outline'>In Stock</Badge>) : (<Badge variant='destructive'>Out of Stock</Badge>)}
                             </div>
-                            {product.stock > 0 && (<div className="flex-center"><AddtoCart item={{
-                                productId: product.id,
-                                name: product.name,
-                                slug: product.slug,
-                                price: product.price,
-                                qty: 1,
-                                image: product.images![0]
-                            }} /></div>)}
+                            {product.stock > 0 && (<div className="flex-center"><AddtoCart
+                                cart={cart}
+                                item={{
+                                    productId: product.id,
+                                    name: product.name,
+                                    slug: product.slug,
+                                    price: product.price,
+                                    qty: 1,
+                                    image: product.images![0]
+                                }} /></div>)}
                         </CardContent>
                     </Card>
                 </div>
