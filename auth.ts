@@ -4,8 +4,8 @@ import { prisma } from "@/db/prisma";
 import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { authConfig } from "./auth.config";
+import { cookies } from "next/headers";
 // import type { NextAuthConfig } from "next-auth";
-// import { cookies} from "next/headers";
 // import { NextResponse } from "next/server";
 
 export const config = {
@@ -73,6 +73,7 @@ export const config = {
     async jwt({ token, user, trigger, session }: any) {
       //  Assign user field to token
       if (user) {
+        token.id = user.id;
         token.role = user.role;
 
         //if user has no name
@@ -83,33 +84,62 @@ export const config = {
           where: { id: user.id },
           data: { name: token.name },
         });
+
+        if (trigger === "signIn" || trigger === "signUp") {
+          const cookiesObject = await cookies();
+          const sessionCartId = cookiesObject.get("sessionCartId")?.value;
+
+          if (sessionCartId) {
+            const sessionCart = await prisma.cart.findFirst({
+              where: { sessionCartId },
+            });
+            if (sessionCart) {
+              //delete current user cart
+              await prisma.cart.deleteMany({
+                where: { userId: user.id },
+              });
+
+              //Asssign New Cart
+              await prisma.cart.update({
+                where: { id: sessionCart.id },
+                data: { userId: user.id },
+              });
+            }
+          }
+        }
       }
+      // Handle session updates
+      if (session?.user.name && trigger === "update") {
+        token.name = session.user.name;
+      }
+
       return token;
     },
-    // authorized({ request, auth }: any) {
-    //   ///check for session cart cookie
-    //   if (!request.cookies.get("sessionCartId")) {
-    //     //Generate new session cartId Cookie
-    //     const sessionCartId = crypto.randomUUID();
-
-    //     //Clone Request Headers
-    //     const newRequestHeaders = new Headers(request.headers);
-
-    //     //Create new Response and add New Headers
-    //     const response = NextResponse.next({
-    //       request: {
-    //         headers: newRequestHeaders,
-    //       },
-    //     });
-
-    //     //set newly generated sessionCartId in the response cookies
-    //     response.cookies.set("sessionCartId", sessionCartId);
-    //     return response;
-    //   } else {
-    //     return true;
-    //   }
-    // },
   },
 };
 
 export const { handlers, auth, signIn, signOut } = NextAuth(config);
+
+// authorized({ request, auth }: any) {
+//   ///check for session cart cookie
+//   if (!request.cookies.get("sessionCartId")) {
+//     //Generate new session cartId Cookie
+//     const sessionCartId = crypto.randomUUID();
+
+//     //Clone Request Headers
+//     const newRequestHeaders = new Headers(request.headers);
+
+//     //Create new Response and add New Headers
+//     const response = NextResponse.next({
+//       request: {
+//         headers: newRequestHeaders,
+//       },
+//     });
+
+//     //set newly generated sessionCartId in the response cookies
+//     response.cookies.set("sessionCartId", sessionCartId);
+//     return response;
+//   } else {
+//     return true;
+//   }
+// },
