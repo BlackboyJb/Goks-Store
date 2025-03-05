@@ -8,11 +8,11 @@ import { Toaster } from "@/components/ui/sonner";
 const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: {
-    template: `%$ | Goks Store`,
-    default: APP_NAME
+    template: `%s | Prostore`,
+    default: APP_NAME,
   },
   description: APP_DESCRIPTION,
-  metadataBase: new URL(PUBLIC_DOMAIN)
+  metadataBase: new URL(PUBLIC_DOMAIN),
 };
 
 export default function RootLayout({

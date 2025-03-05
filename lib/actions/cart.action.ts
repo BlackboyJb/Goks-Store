@@ -15,13 +15,11 @@ const calcPrice = (items: CartItem[]) => {
       items.reduce((acc, item) => acc + Number(item.price) * item.qty, 0)
     ),
     shippingPrice = round2(itemsPrice > 1000000.0 ? 0 : 1000),
-    taxPrice = round2(0.01 * itemsPrice),
-    totalPrice = round2(itemsPrice + shippingPrice + taxPrice);
+    totalPrice = round2(itemsPrice + shippingPrice);
 
   return {
     itemsPrice: itemsPrice.toFixed(2),
     shippingPrice: shippingPrice.toFixed(2),
-    taxPrice: taxPrice.toFixed(2),
     totalPrice: totalPrice.toFixed(2),
   };
 };
@@ -145,7 +143,6 @@ export async function getMyCart() {
     items: cart.items as CartItem[],
     itemsPrice: cart.itemsPrice.toString(),
     shippingPrice: cart.shippingPrice.toString(),
-    taxPrice: cart.taxPrice.toString(),
     totalPrice: cart.totalPrice.toString(),
   });
 }
