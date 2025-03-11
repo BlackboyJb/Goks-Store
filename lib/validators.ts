@@ -1,4 +1,4 @@
-import { z } from "zod";
+import { string, z } from "zod";
 import { Payment_METHOD } from "./constants";
 // import { formatNumbertoDecimal } from "./utils";
 
@@ -103,4 +103,11 @@ export const insertOrderItemSchema = z.object({
   name: z.string(),
   price: currency,
   qty: z.number(),
+});
+
+export const paymentResultSchema = z.object({
+  id: z.string(),
+  status: z.string(),
+  email_address: z.string(),
+  PricePaid: z.string(),
 });

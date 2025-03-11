@@ -2,14 +2,37 @@
 
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import {
+    Table,
+    TableBody,
+    TableCell,
+    TableHead,
+    TableHeader,
+    TableRow,
+} from "@/components/ui/table";
 import { formatDateTime, formatId } from "@/lib/utils";
 import { Order } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
+import { toast } from "sonner";
 import { FormatCurrency } from "@/lib/utils";
+import {
+    PayPalButtons,
+    PayPalScriptProvider,
+    usePayPalScriptReducer,
+} from "@paypal/react-paypal-js";
+import {
+    createPaypalOrder,
+    approvePayPalOrder,
+} from "@/lib/actions/order.action";
 
-const OrderDetailsTable = ({ order }: { order: Order }) => {
+const OrderDetailsTable = ({
+    order,
+    paypalClientId,
+}: {
+    order: Order;
+    paypalClientId: string;
+}) => {
     const {
         id,
         shippingAddress,
@@ -23,6 +46,43 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
         paidAt,
         deliveredAt,
     } = order;
+
+    const PrintLoadingState = () => {
+        const [{ isPending, isRejected }] = usePayPalScriptReducer();
+        let status = "";
+
+        if (isPending) {
+            status = "Loading Paypal";
+        } else if (isRejected) {
+            status = "Error Loading Paypal";
+        }
+        return status;
+    };
+
+    const handleCreatePayPalOrder = async () => {
+        const res = await createPaypalOrder(order.id);
+
+        if (!res.success) {
+            toast.success(res.message);
+        } else {
+            toast.error(res.message);
+        }
+
+        return res.data;
+    };
+
+
+    const handleApprovePayPalOrder = async (data: { orderID: string }) => {
+        const res = await approvePayPalOrder(order.id, data)
+
+        if (!res.success) {
+            toast.success(res.message);
+        } else {
+            toast.error(res.message);
+        }
+
+
+    }
     return (
         <>
             <h1 className="py-4 text-2xl">Order Id : {formatId(id)}</h1>
@@ -79,15 +139,25 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                                     {orderitems.map((item) => (
                                         <TableRow key={item.slug}>
                                             <TableCell>
-                                                <Link href={`/product/${item.slug}`} className="flex items-center">
-                                                    <Image src={item.image} alt={item.name} height={50} width={50} />
+                                                <Link
+                                                    href={`/product/${item.slug}`}
+                                                    className="flex items-center"
+                                                >
+                                                    <Image
+                                                        src={item.image}
+                                                        alt={item.name}
+                                                        height={50}
+                                                        width={50}
+                                                    />
                                                     <span className="px-2">{item.name}</span>
                                                 </Link>
                                             </TableCell>
                                             <TableCell>
                                                 <span className="px-2">{item.qty}</span>
                                             </TableCell>
-                                            <TableCell className="text-right">{FormatCurrency(item.price)}</TableCell>
+                                            <TableCell className="text-right">
+                                                {FormatCurrency(item.price)}
+                                            </TableCell>
                                         </TableRow>
                                     ))}
                                 </TableBody>
@@ -110,6 +180,19 @@ const OrderDetailsTable = ({ order }: { order: Order }) => {
                                 <div>Total Price :</div>
                                 <div>{FormatCurrency(totalPrice)}</div>
                             </div>
+
+                            {/* Paypal Payment */}
+                            {!isPaid && paymentMethod === "PayPal" && (
+                                <div>
+                                    <PayPalScriptProvider options={{ clientId: paypalClientId }}>
+                                        <PrintLoadingState />
+                                        <PayPalButtons
+                                            createOrder={handleCreatePayPalOrder}
+                                            onApprove={handleApprovePayPalOrder}
+                                        />
+                                    </PayPalScriptProvider>
+                                </div>
+                            )}
                         </CardContent>
                     </Card>
                 </div>
