@@ -143,3 +143,44 @@ export async function updatePaymentMethod(
     return { success: false, message: formatError(error) };
   }
 }
+
+// Update the user profile
+export async function updateProfile(user: {
+  name?: string;
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+}) {
+  try {
+    const session = await auth();
+
+    const currentUser = await prisma.user.findFirst({
+      where: { id: session?.user?.id },
+    });
+
+    if (!currentUser) throw new Error("User not Found");
+
+    // Prepare update data with strict typing
+    const updateData: Partial<{
+      name: string;
+      email: string;
+      password: string;
+    }> = {};
+
+    if (user.name) updateData.name = user.name;
+    if (user.email) updateData.email = user.email;
+    if (user.password) updateData.password = hashSync(user.password, 10);
+
+    // Update user if there are fields to update
+    if (Object.keys(updateData).length > 0) {
+      await prisma.user.update({
+        where: { id: currentUser.id },
+        data: updateData,
+      });
+    }
+
+    return { success: true, message: "User Profile Updated Successfully" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}

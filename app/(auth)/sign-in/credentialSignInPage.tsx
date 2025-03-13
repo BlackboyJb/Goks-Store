@@ -6,34 +6,36 @@ import { SignInDefaultValues } from "@/lib/constants/index";
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { useActionState } from "react";
-import { useFormStatus } from 'react-dom'
-import { signInWithCredentials } from '@/lib/actions/user.actions'
+import { useFormStatus } from "react-dom";
+import { signInWithCredentials } from "@/lib/actions/user.actions";
 import { useSearchParams } from "next/navigation";
-
-
+import { useState } from "react";
+import { Eye, EyeOff } from "lucide-react";
 
 const CredentialsSignInPage = () => {
     const [data, action] = useActionState(signInWithCredentials, { success: false, message: "" });
 
-    const searchParams = useSearchParams()
-    const callbackUrl = searchParams.get('callbackUrl') || '/'
-
-
+    const [showPassword, setShowPassword] = useState(false);
+    const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
+    const searchParams = useSearchParams();
+    const callbackUrl = searchParams.get("callbackUrl") || "/";
 
 
     const SignInButton = () => {
-        const { pending } = useFormStatus()
+        const { pending } = useFormStatus();
         return (
-            <Button disabled={pending} className="w-full" variant='default' >{pending ? 'Signing In...' : 'Sign In'}</Button>
-        )
-    }
+            <Button disabled={pending} className="w-full" variant="default">
+                {pending ? "Signing In..." : "Sign In"}
+            </Button>
+        );
+    };
 
     return (
         <form action={action}>
             <input type="hidden" name="callbackUrl" value={callbackUrl} />
             <div className="space-y-6">
                 <div>
-                    <Label htmlFor="email"> Email</Label>
+                    <Label htmlFor="email">Email</Label>
                     <Input
                         id="email"
                         name="email"
@@ -44,29 +46,35 @@ const CredentialsSignInPage = () => {
                     />
                 </div>
                 <div>
-                    <Label htmlFor="Password"> Password</Label>
-                    <Input
-                        id="password"
-                        name="password"
-                        type="password"
-                        required
-                        autoComplete="password"
-                        defaultValue={SignInDefaultValues.password}
-                    />
+                    <Label htmlFor="password">Password</Label>
+                    <div className="relative">
+                        <Input
+                            id="password"
+                            name="password"
+                            type={showPassword ? "text" : "password"}
+                            required
+                            autoComplete="current-password"
+                            defaultValue={SignInDefaultValues.password}
+                        />
+                        <button
+                            type="button"
+                            onClick={togglePasswordVisibility}
+                            className="absolute right-3 top-2.5"
+                        >
+                            {showPassword ? <EyeOff /> : <Eye />}
+                        </button>
+                    </div>
                 </div>
                 <div>
                     <SignInButton />
                 </div>
 
-                {data && !data.success && (<div className="text-center text-destructive">{data.message}</div>)}
-
-
-
-
+                {data && !data.success && (
+                    <div className="text-center text-destructive">{data.message}</div>
+                )}
 
                 <div className="text-sm text-center text-muted-foreground">
-                    Don&apos;t have an account? <Link href='/sign-up' target="self" className="link">Sign Up</Link>
-
+                    Don&apos;t have an account? <Link href="/sign-up" target="self" className="link">Sign Up</Link>
                 </div>
             </div>
         </form>
@@ -74,3 +82,134 @@ const CredentialsSignInPage = () => {
 };
 
 export default CredentialsSignInPage;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// "use client";
+
+// import { Label } from "@/components/ui/label";
+// import { Input } from "@/components/ui/input";
+// import { SignInDefaultValues } from "@/lib/constants/index";
+// import { Button } from "@/components/ui/button";
+// import Link from "next/link";
+// import { useActionState } from "react";
+// import { useFormStatus } from 'react-dom'
+// import { signInWithCredentials } from '@/lib/actions/user.actions'
+// import { useSearchParams } from "next/navigation";
+
+
+
+
+// const CredentialsSignInPage = () => {
+//     const [data, action] = useActionState(signInWithCredentials, { success: false, message: "" });
+
+//     const searchParams = useSearchParams()
+//     const callbackUrl = searchParams.get('callbackUrl') || '/'
+
+
+
+
+//     const SignInButton = () => {
+//         const { pending } = useFormStatus()
+//         return (
+//             <Button disabled={pending} className="w-full" variant='default' >{pending ? 'Signing In...' : 'Sign In'}</Button>
+//         )
+//     }
+
+//     return (
+//         <form action={action}>
+//             <input type="hidden" name="callbackUrl" value={callbackUrl} />
+//             <div className="space-y-6">
+//                 <div>
+//                     <Label htmlFor="email"> Email</Label>
+//                     <Input
+//                         id="email"
+//                         name="email"
+//                         type="email"
+//                         required
+//                         autoComplete="email"
+//                         defaultValue={SignInDefaultValues.email}
+//                     />
+//                 </div>
+//                 <div>
+//                     <Label htmlFor="Password"> Password</Label>
+//                     <Input
+//                         id="password"
+//                         name="password"
+//                         type="password"
+//                         required
+//                         autoComplete="password"
+//                         defaultValue={SignInDefaultValues.password}
+//                     />
+//                 </div>
+//                 <div>
+//                     <SignInButton />
+//                 </div>
+
+//                 {data && !data.success && (<div className="text-center text-destructive">{data.message}</div>)}
+
+
+
+
+
+//                 <div className="text-sm text-center text-muted-foreground">
+//                     Don&apos;t have an account? <Link href='/sign-up' target="self" className="link">Sign Up</Link>
+
+//                 </div>
+//             </div>
+//         </form>
+//     );
+// };
+
+// export default CredentialsSignInPage;
+

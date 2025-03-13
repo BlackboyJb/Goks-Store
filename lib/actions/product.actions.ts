@@ -5,7 +5,7 @@ import { convertToPlainObject } from "../utils";
 export async function GetLatestProduct() {
   const data = await prisma.product.findMany({
     take: 4,
-    orderBy: { createdAt: "desc" },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
   });
 
   return convertToPlainObject(data);

@@ -113,6 +113,10 @@ export const config = {
         token.name = session.user.name;
       }
 
+      if (session?.user.email && trigger === "update") {
+        token.email = session.user.email;
+      }
+
       return token;
     },
   },

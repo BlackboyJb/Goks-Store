@@ -10,6 +10,7 @@ import { prisma } from "@/db/prisma";
 import { CartItem, PaymentResult } from "@/types";
 import { paypal } from "../paypal";
 import { revalidatePath } from "next/cache";
+import { PAGE_SIZE } from "../constants";
 
 //create order and create the order Items
 export async function createOrder() {
@@ -230,4 +231,34 @@ async function updateOrdertoPaid({
     },
   });
   if (!updatedOrder) throw new Error("Order not Found");
+}
+
+///GET MY ORDER
+export async function getMyOrders({
+  limit = PAGE_SIZE,
+  page,
+}: {
+  limit?: number;
+  page: number;
+}) {
+  const session = await auth();
+  if (!session) throw new Error("User not Authorized");
+
+  const data = await prisma.order.findMany({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    where: { userId: session?.user?.id! },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    skip: (page - 1) * limit,
+  });
+
+  const dataCount = await prisma.order.count({
+    // eslint-disable-next-line @typescript-eslint/no-non-null-asserted-optional-chain
+    where: { userId: session?.user?.id! },
+  });
+
+  return {
+    data,
+    totalPages: Math.ceil(dataCount / limit),
+  };
 }

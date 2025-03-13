@@ -105,9 +105,36 @@ export const insertOrderItemSchema = z.object({
   qty: z.number(),
 });
 
+//schema for paypal result schema
 export const paymentResultSchema = z.object({
   id: z.string(),
   status: z.string(),
   email_address: z.string(),
   PricePaid: z.string(),
 });
+
+//schema for updating user Profile
+export const updateProfileSchema = z
+  .object({
+    name: z.string().min(3, "Name must be at least 3 characters"),
+    email: z.string().email("Invalid email address"),
+    password: z
+      .union([
+        z.string().min(6, "Password must be at least 6 characters"),
+        z.literal(""),
+      ])
+      .optional(),
+    confirmPassword: z.string().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password !== "") {
+        return data.password === data.confirmPassword;
+      }
+      return true;
+    },
+    {
+      message: "Passwords don't match",
+      path: ["confirmPassword"],
+    }
+  );

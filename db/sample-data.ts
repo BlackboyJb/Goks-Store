@@ -29,8 +29,8 @@ const sampleData = {
       price: 750000.0,
       brand: "Playstation",
       rating: 4.5,
-      numReviews: 10,
-      stock: 5,
+      numReviews: 5,
+      stock: 3,
       isFeatured: true,
       banner: "banner-1.jpg",
       console_type: "Ps5",
@@ -290,5 +290,8 @@ const sampleData = {
     },
   ],
 };
-
+sampleData.products = sampleData.products.map((product, index) => ({
+  ...product,
+  createdAt: new Date(Date.now() - index * 1000), // Offset each by 1 second
+}));
 export default sampleData;
