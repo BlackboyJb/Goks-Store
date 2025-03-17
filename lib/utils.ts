@@ -68,6 +68,14 @@ export function FormatCurrency(amount: string | number | null) {
   }
 }
 
+//number Formatter
+const NUMBER_FORMATTER = new Intl.NumberFormat("en-US");
+
+//format number using formatter above
+export function FormatNumber(number: number) {
+  return NUMBER_FORMATTER.format(number);
+}
+
 // shorten the Uuid
 export function formatId(id: string) {
   return `${id.substring(id.length - 12)}`;

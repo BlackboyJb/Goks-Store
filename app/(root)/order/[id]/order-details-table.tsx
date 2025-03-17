@@ -11,6 +11,8 @@ import {
     TableRow,
 } from "@/components/ui/table";
 import { formatDateTime, formatId } from "@/lib/utils";
+import { useTransition } from "react";
+import { Button } from "@/components/ui/button";
 import { Order } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
@@ -24,14 +26,19 @@ import {
 import {
     createPaypalOrder,
     approvePayPalOrder,
+    UpdateOrdertoPaidonCOD,
+    UpdateOrdertoDelivered
 } from "@/lib/actions/order.action";
+
 
 const OrderDetailsTable = ({
     order,
     paypalClientId,
+    isAdmin
 }: {
     order: Order;
     paypalClientId: string;
+    isAdmin: boolean
 }) => {
     const {
         id,
@@ -80,9 +87,46 @@ const OrderDetailsTable = ({
         } else {
             toast.error(res.message);
         }
-
-
     }
+
+    //Button to mark as Paid
+    const MarkasPaidButton = () => {
+        const [isPending, startTransition] = useTransition()
+
+        return (
+            <Button type="button" disabled={isPending} onClick={() => startTransition(async () => {
+                const res = await UpdateOrdertoPaidonCOD(order.id)
+
+                if (!res.success) {
+                    toast.success(res.message);
+                } else {
+                    toast.error(res.message);
+                }
+            })}>
+                {isPending ? 'Processing...' : 'Mark as Paid'}
+            </Button>
+        )
+    }
+
+    //Button to mark as 
+    const MarkasDeliveredButton = () => {
+        const [isPending, startTransition] = useTransition()
+
+        return (
+            <Button type="button" disabled={isPending} onClick={() => startTransition(async () => {
+                const res = await UpdateOrdertoDelivered(order.id)
+
+                if (!res.success) {
+                    toast.success(res.message);
+                } else {
+                    toast.error(res.message);
+                }
+            })}>
+                {isPending ? 'Processing...' : 'Mark as Delivered'}
+            </Button>
+        )
+    }
+
     return (
         <>
             <h1 className="py-4 text-2xl">Order Id : {formatId(id)}</h1>
@@ -192,6 +236,13 @@ const OrderDetailsTable = ({
                                         />
                                     </PayPalScriptProvider>
                                 </div>
+                            )}
+                            {/* cash On Delivery */}
+                            {isAdmin && !isPaid && paymentMethod === 'Cash On Delivery' && (
+                                <MarkasPaidButton />
+                            )}
+                            {isAdmin && isPaid && !isDelivered && (
+                                <MarkasDeliveredButton />
                             )}
                         </CardContent>
                     </Card>

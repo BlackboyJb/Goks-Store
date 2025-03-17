@@ -5,6 +5,7 @@ import { APP_NAME, APP_DESCRIPTION, PUBLIC_DOMAIN } from '@/lib/constants/index'
 import { ThemeProvider } from 'next-themes'
 import { Toaster } from "@/components/ui/sonner";
 
+
 const inter = Inter({ subsets: ['latin'] })
 export const metadata: Metadata = {
   title: {
