@@ -269,30 +269,75 @@ type SalesDataType = {
   totalSales: number;
 }[];
 
-// Get sales data and order summary
+// // Get sales data and order summary
+// export async function getOrderSummary() {
+//   // Get counts for each resource
+//   const ordersCount = await prisma.order.count();
+//   const productsCount = await prisma.product.count();
+//   const usersCount = await prisma.user.count();
+
+//   // Calculate the total sales
+//   const totalSales = await prisma.order.aggregate({
+//     _sum: { totalPrice: true },
+//   });
+
+//   // Get monthly sales
+//   const salesDataRaw = await prisma.$queryRaw<
+//     Array<{ month: string; totalSales: Prisma.Decimal }>
+//   >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
+
+//   const salesData: SalesDataType = salesDataRaw.map((entry) => ({
+//     month: entry.month,
+//     totalSales: Number(entry.totalSales),
+//   }));
+
+//   // Get latest sales
+//   const latestSales = await prisma.order.findMany({
+//     orderBy: { createdAt: "desc" },
+//     include: {
+//       user: { select: { name: true } },
+//     },
+//     take: 6,
+//   });
+
+//   return {
+//     ordersCount,
+//     productsCount,
+//     usersCount,
+//     totalSales,
+//     latestSales,
+//     salesData,
+//   };
+// }
+
 export async function getOrderSummary() {
   // Get counts for each resource
-  const ordersCount = await prisma.order.count();
+  const ordersCount = await prisma.order.count({
+    where: { isPaid: true }, // Only count paid orders
+  });
+
   const productsCount = await prisma.product.count();
   const usersCount = await prisma.user.count();
 
-  // Calculate the total sales
+  // Calculate the total sales (only paid orders)
   const totalSales = await prisma.order.aggregate({
     _sum: { totalPrice: true },
+    where: { isPaid: true }, // Filter by paid orders
   });
 
-  // Get monthly sales
+  // Get monthly sales (only paid orders)
   const salesDataRaw = await prisma.$queryRaw<
     Array<{ month: string; totalSales: Prisma.Decimal }>
-  >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
+  >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" WHERE "isPaid" = true GROUP BY to_char("createdAt", 'MM/YY')`;
 
   const salesData: SalesDataType = salesDataRaw.map((entry) => ({
     month: entry.month,
     totalSales: Number(entry.totalSales),
   }));
 
-  // Get latest sales
+  // Get latest sales (only paid orders)
   const latestSales = await prisma.order.findMany({
+    where: { isPaid: true }, // Only include paid orders
     orderBy: { createdAt: "desc" },
     include: {
       user: { select: { name: true } },
