@@ -8,6 +8,7 @@ const currency = z
     (value) => /^\d+(\.\d{2})?$/.test(value),
     "Price Must have two Decimal Places"
   );
+
 ///schema for inserting Product
 export const insertProductSchemas = z.object({
   name: z.string().min(3, "Name must be at least 3 characters"),
@@ -20,6 +21,12 @@ export const insertProductSchemas = z.object({
   isFeatured: z.boolean(),
   banner: z.string().nullable(),
   price: currency,
+  console_type: z.string().min(1, "Console type is required"),
+});
+
+///schema for updating product
+export const updateProductSchema = insertProductSchemas.extend({
+  id: z.string().min(1, "Id is Required"),
 });
 
 //schema for User Sign in

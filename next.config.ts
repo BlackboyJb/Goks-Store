@@ -6,6 +6,15 @@ const nextConfig: NextConfig = {
     ignoreBuildErrors: true,
   },
   /* config options here */
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "utfs.io",
+        port: "",
+      },
+    ],
+  },
 };
 
 export default nextConfig;
