@@ -19,7 +19,7 @@ const links = [
     },
     {
         title: "Users",
-        href: "/admin/Users",
+        href: "/admin/users",
     },
 ];
 

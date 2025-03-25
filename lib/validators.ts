@@ -124,7 +124,7 @@ export const paymentResultSchema = z.object({
 export const updateProfileSchema = z
   .object({
     name: z.string().min(3, "Name must be at least 3 characters"),
-    email: z.string().email("Invalid email address"),
+    email: z.string().min(3, "Invalid email address"),
     password: z
       .union([
         z.string().min(6, "Password must be at least 6 characters"),
@@ -145,3 +145,11 @@ export const updateProfileSchema = z
       path: ["confirmPassword"],
     }
   );
+
+//schema to update user info from Admin
+export const AdminUserUpdate = z.object({
+  id: z.string().min(1, "ID is required"),
+  name: z.string().min(3, "Name must be at least 3 characters"),
+  email: z.string().min(3, "Invalid email address"),
+  role: z.string().min(1, "Role is Required"),
+});
