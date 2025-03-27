@@ -226,7 +226,7 @@ export async function getAllUsers({
 ///delete a user
 export async function deleteUsers(id: string) {
   try {
-    await prisma.order.delete({ where: { id } });
+    await prisma.user.delete({ where: { id } });
     revalidatePath("/admin/users");
 
     return { success: true, message: "User Deleted Successfully" };

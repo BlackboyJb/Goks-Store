@@ -1,18 +1,14 @@
-"use client";
+
 import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
+import MotionWrapper from "@/helpers/motionwrapper";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import ProductPrice from "./product-price";
 import { product } from '@/types'
 
 const ProductCard = ({ product }: { product: product }) => {
     return (
-        <motion.div
-            initial={{ y: 0 }}
-            whileHover={{ y: -10 }}
-            transition={{ type: "tween", duration: 0.3, ease: "easeInOut" }}
-        >
+        <MotionWrapper>
             <Card className="w-full max-w-sm shadow-lg rounded-lg overflow-hidden">
                 <CardHeader className="p-0 items-center">
                     <Link href={`/product/${product.slug}`}>
@@ -38,7 +34,8 @@ const ProductCard = ({ product }: { product: product }) => {
                     </div>
                 </CardContent>
             </Card>
-        </motion.div>
+        </MotionWrapper>
+
     );
 };
 

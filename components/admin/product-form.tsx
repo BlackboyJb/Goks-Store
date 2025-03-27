@@ -254,15 +254,35 @@ const ProductForm = ({
                                 <Card>
                                     <CardContent className="space-y-2 mt-2 min-h-48">
                                         <div className="flex-start space-x-2">
-                                            {images.map((image: string) => (
-                                                <Image key={image} src={image} alt="product Image" className="w-20 h-20 object-cover object-center rounded-sm " width={100} height={100} />
+                                            {images.map((image: string, index: number) => (
+                                                <div key={image} className="relative inline-block">
+                                                    <Image
+                                                        src={image}
+                                                        alt="Product Image"
+                                                        className="w-20 h-20 object-cover object-center rounded-sm"
+                                                        width={100}
+                                                        height={100}
+                                                    />
+                                                    <button
+                                                        type="button"
+                                                        className="absolute top-0 right-0 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center shadow-md hover:bg-red-600"
+                                                        onClick={() => {
+                                                            const updatedImages = images.filter((_, i) => i !== index);
+                                                            form.setValue('images', updatedImages);
+                                                        }}
+                                                    >
+                                                        ❌
+                                                    </button>
+                                                </div>
                                             ))}
                                             <FormControl>
-                                                <UploadButton endpoint='imageUploader' onClientUploadComplete={(res: { url: string }[]) => {
-                                                    form.setValue('images', [...images, res[0].url])
-                                                }}
+                                                <UploadButton
+                                                    endpoint='imageUploader'
+                                                    onClientUploadComplete={(res: { url: string }[]) => {
+                                                        form.setValue('images', [...images, res[0].url]);
+                                                    }}
                                                     onUploadError={(error: Error) => {
-                                                        toast.error(error.message)
+                                                        toast.error(error.message);
                                                     }}
                                                 />
                                             </FormControl>
@@ -273,34 +293,62 @@ const ProductForm = ({
                         )}
                     />
                 </div>
+
+
                 <div className="upload-field">
                     {/* isFeatured */}
                     Featured Product
                     <Card>
                         <CardContent className="space-y-2 mt-2">
-                            <FormField control={form.control} name='isFeatured' render={({ field }) => (
-                                <FormItem className="space-x-2 items-center">
-                                    <FormControl>
-                                        <Checkbox checked={field.value} onCheckedChange={field.onChange} />
-                                    </FormControl>
-                                    <FormLabel>Is Featured?</FormLabel>
-                                </FormItem>
-                            )} />
+                            <FormField
+                                control={form.control}
+                                name="isFeatured"
+                                render={({ field }) => (
+                                    <FormItem className="space-x-2 items-center">
+                                        <FormControl>
+                                            <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+                                        </FormControl>
+                                        <FormLabel>Is Featured?</FormLabel>
+                                    </FormItem>
+                                )}
+                            />
+
                             {isFeatured && banner && (
-                                <Image src={banner} alt='banner image' className="w-full object-cover object-center rounded-sm" width={1920} height={680} />
+                                <div className="relative w-full">
+                                    <Image
+                                        src={banner}
+                                        alt="banner image"
+                                        className="w-full object-cover object-center rounded-sm"
+                                        width={1920}
+                                        height={680}
+                                    />
+                                    <button
+                                        type="button"
+                                        className="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full w-6 h-6 flex items-center justify-center shadow-md hover:bg-red-600"
+                                        onClick={() => form.setValue('banner', '')}
+                                    >
+                                        ❌
+                                    </button>
+                                </div>
                             )}
+
                             {isFeatured && !banner && (
-                                <UploadButton endpoint='imageUploader' onClientUploadComplete={(res: { url: string }[]) => {
-                                    form.setValue('banner', res[0].url)
-                                }}
+                                <UploadButton
+                                    endpoint="imageUploader"
+                                    onClientUploadComplete={(res: { url: string }[]) => {
+                                        form.setValue("banner", res[0].url);
+                                    }}
                                     onUploadError={(error: Error) => {
-                                        toast.error(error.message)
+                                        toast.error(error.message);
                                     }}
                                 />
                             )}
                         </CardContent>
                     </Card>
                 </div>
+
+
+
                 <div>{/* description */}
                     <FormField
                         control={form.control}
@@ -331,3 +379,66 @@ const ProductForm = ({
 };
 
 export default ProductForm;
+
+
+// <div className="upload-field">
+// {/* isFeatured */}
+// Featured Product
+// <Card>
+//     <CardContent className="space-y-2 mt-2">
+//         <FormField control={form.control} name='isFeatured' render={({ field }) => (
+//             <FormItem className="space-x-2 items-center">
+//                 <FormControl>
+//                     <Checkbox checked={field.value} onCheckedChange={field.onChange} />
+//                 </FormControl>
+//                 <FormLabel>Is Featured?</FormLabel>
+//             </FormItem>
+//         )} />
+//         {isFeatured && banner && (
+//             <Image src={banner} alt='banner image' className="w-full object-cover object-center rounded-sm" width={1920} height={680} />
+//         )}
+//         {isFeatured && !banner && (
+//             <UploadButton endpoint='imageUploader' onClientUploadComplete={(res: { url: string }[]) => {
+//                 form.setValue('banner', res[0].url)
+//             }}
+//                 onUploadError={(error: Error) => {
+//                     toast.error(error.message)
+//                 }}
+//             />
+//         )}
+//     </CardContent>
+// </Card>
+// </div>
+
+
+
+// <div className="upload-field flex flex-col md:flex-row gap-5">
+//                     {/* images */}
+//                     <FormField
+//                         control={form.control}
+//                         name="images"
+//                         render={() => (
+//                             <FormItem className="w-full">
+//                                 <FormLabel>Images</FormLabel>
+//                                 <Card>
+//                                     <CardContent className="space-y-2 mt-2 min-h-48">
+//                                         <div className="flex-start space-x-2">
+//                                             {images.map((image: string) => (
+//                                                 <Image key={image} src={image} alt="product Image" className="w-20 h-20 object-cover object-center rounded-sm " width={100} height={100} />
+//                                             ))}
+//                                             <FormControl>
+//                                                 <UploadButton endpoint='imageUploader' onClientUploadComplete={(res: { url: string }[]) => {
+//                                                     form.setValue('images', [...images, res[0].url])
+//                                                 }}
+//                                                     onUploadError={(error: Error) => {
+//                                                         toast.error(error.message)
+//                                                     }}
+//                                                 />
+//                                             </FormControl>
+//                                         </div>
+//                                     </CardContent>
+//                                 </Card>
+//                             </FormItem>
+//                         )}
+//                     />
+//                 </div>
