@@ -38,10 +38,10 @@ export async function getAllProducts({
   limit = PAGE_SIZE,
   page,
   category,
-  price,
-  rating,
-  sort,
-}: {
+}: // price,
+// rating,
+// sort,
+{
   query: string;
   limit?: number;
   page: number;
