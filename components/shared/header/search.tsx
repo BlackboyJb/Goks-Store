@@ -1,15 +1,15 @@
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { getAllProduct } from "@/lib/actions/product.actions";
+import { getAllProductByCategory } from "@/lib/actions/product.actions";
 import { SearchIcon } from "lucide-react";
 
 const Search = async () => {
-    const category = await getAllProduct()
+    const category = await getAllProductByCategory()
 
     return (<form action='/search' method="GET">
         <div className="flex w-full max-w-sm items-center space-x-2">
-            <Select name="Category">
+            <Select name="category">
                 <SelectTrigger className="w-[180px]">
                     <SelectValue placeholder='All' />
                 </SelectTrigger>

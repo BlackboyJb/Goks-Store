@@ -38,9 +38,9 @@ export async function getAllProducts({
   limit = PAGE_SIZE,
   page,
   category,
-}: // price,
-// rating,
-// sort,
+  price,
+  rating,
+}: // sort,
 {
   query: string;
   limit?: number;
@@ -64,9 +64,35 @@ export async function getAllProducts({
   // Category filter
   const categoryFilter = category && category !== "all" ? { category } : {};
 
+  //Price filter
+  const priceFilter: Prisma.ProductWhereInput =
+    price && price !== "all"
+      ? {
+          price: {
+            gte: Number(price.split("-")[0]) || 0,
+            lte: Number(price.split("-")[1]) || undefined,
+          },
+        }
+      : {};
+
+  //Rating Filter
+  const ratingFilter =
+    rating && rating !== "all"
+      ? {
+          rating: {
+            gte: Number(rating),
+          },
+        }
+      : {};
+
   const data = await prisma.product.findMany({
     orderBy: { createdAt: "desc" },
-    where: { ...queryFilter, ...categoryFilter },
+    where: {
+      ...queryFilter,
+      ...categoryFilter,
+      ...priceFilter,
+      ...ratingFilter,
+    },
     skip: page && limit ? (page - 1) * limit : 0,
     take: limit,
   });
@@ -143,7 +169,7 @@ export async function updateProduct(data: z.infer<typeof updateProductSchema>) {
 }
 
 ///get all product category
-export async function getAllProduct() {
+export async function getAllProductByCategory() {
   const data = await prisma.product.groupBy({
     by: "category",
     _count: true,

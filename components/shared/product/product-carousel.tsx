@@ -14,16 +14,24 @@ const ProductCarousel = ({ data }: { data: product[] }) => {
             <CarouselContent>
                 {data.map((product: product) => (
                     <CarouselItem key={product.id}>
-                        <Link href={`/product/${product.slug}`}>
+                        {/* <Link href={`/product/${product.slug}`}>
                             <div className="relative mx-auto">
                                 <Image src={product.banner!} alt={product.name} height='0' width='0' sizes="50vw" className="w-full h-auto" />
-                                <div className="absolute inset-0 flex items-end justify-center">
-                                    {/* <h2 className="bg-gray-900 bg-opacity-50 text-2xl font-bold px-2 text-white">
-                                        {product.name}
-                                    </h2> */}
-                                </div>
+
+                            </div>
+                        </Link> */}
+                        <Link href={`/product/${product.slug}`}>
+                            <div className="relative w-full aspect-[16/9] sm:aspect-[16/9] md:aspect-[16/9]">
+                                <Image
+                                    src={product.banner!}
+                                    alt={product.name}
+                                    layout="fill"
+                                    objectFit="contain"  // Keeps the image fully visible
+                                    className="rounded-lg"
+                                />
                             </div>
                         </Link>
+
                     </CarouselItem>
                 ))}
             </CarouselContent>
@@ -36,3 +44,20 @@ const ProductCarousel = ({ data }: { data: product[] }) => {
 }
 
 export default ProductCarousel;
+
+
+
+
+
+
+
+
+
+
+
+
+// <div className="absolute inset-0 flex items-end justify-center">
+//                                     {/* <h2 className="bg-gray-900 bg-opacity-50 text-2xl font-bold px-2 text-white">
+//                                         {product.name}
+//                                     </h2> */}
+//                                 </div>

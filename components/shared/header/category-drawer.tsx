@@ -1,11 +1,11 @@
-import { getAllProduct } from "@/lib/actions/product.actions";
+import { getAllProductByCategory } from "@/lib/actions/product.actions";
 import { Drawer, DrawerClose, DrawerContent, DrawerHeader, DrawerTitle, DrawerTrigger } from "@/components/ui/drawer";
 import { Button } from "@/components/ui/button";
 import { MenuIcon } from "lucide-react";
 import Link from "next/link";
 
 const CategoryDrawer = async () => {
-    const categories = await getAllProduct()
+    const categories = await getAllProductByCategory()
 
     return <Drawer direction="left">
         <DrawerTrigger asChild>
