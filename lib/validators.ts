@@ -153,3 +153,16 @@ export const AdminUserUpdate = z.object({
   email: z.string().min(3, "Invalid email address"),
   role: z.string().min(1, "Role is Required"),
 });
+
+//schema for Reviews
+export const insertReviewSchema = z.object({
+  title: z.string().min(3, "Title Must be at least 3 characters"),
+  description: z.string().min(3, "Description Must be at least 3 characters"),
+  productId: z.string().min(1, "ProductId is Required"),
+  userId: z.string().min(1, "userId is Required"),
+  rating: z.coerce
+    .number()
+    .int()
+    .min(1, "Rating Must be at least 1")
+    .max(5, "Ratings must be at Most 5"),
+});

@@ -20,7 +20,7 @@ const CategoryDrawer = async () => {
                     {categories.map((x) => (
                         <Button key={x.category} asChild variant='outline' className="w-full justify-start">
                             <DrawerClose asChild>
-                                <Link href={`/search/category=${x.category}`}>{x.category} ({x._count})</Link>
+                                <Link href={`/search?category=${x.category}`}>{x.category} ({x._count})</Link>
                             </DrawerClose>
                         </Button>
                     ))}
