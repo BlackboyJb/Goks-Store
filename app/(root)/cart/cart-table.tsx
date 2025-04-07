@@ -70,6 +70,9 @@ const CartTable = ({ Cart }: { Cart?: cart }) => {
                                                         if (!res.success) {
                                                             toast.error(res.message);
                                                             return;
+                                                        } else {
+                                                            toast.success(res.message)
+                                                            return;
                                                         }
                                                     })
                                                 }
@@ -90,6 +93,9 @@ const CartTable = ({ Cart }: { Cart?: cart }) => {
                                                         const res = await addToCartItem(product);
                                                         if (!res.success) {
                                                             toast.error(res.message);
+                                                            return;
+                                                        } else {
+                                                            toast.success(res.message);
                                                             return;
                                                         }
                                                     })

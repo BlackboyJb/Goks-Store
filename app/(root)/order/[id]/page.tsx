@@ -28,6 +28,7 @@ const OrderDetailsPage = async (props: {
                 shippingAddress: order.shippingAddress as shippingAddress,
             }}
             paypalClientId={process.env.PAYPAL_CLIENT_ID || 'sb'}
+            budpayApiKey={process.env.BUDPAY_PUBLIC_KEY || ''}
             isAdmin={session?.user?.role === 'admin' || false}
         />
     );

@@ -184,8 +184,35 @@ export async function approvePayPalOrder(
   }
 }
 
-//uodate order to Paid
-async function updateOrdertoPaid({
+//Approve Budpay order and update Order to Paid
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export async function approveBudPayOrder(orderId: string, data: any) {
+  try {
+    const order = await prisma.order.findFirst({ where: { id: orderId } });
+    if (!order) throw new Error("Order not found");
+
+    // Optional: Verify BudPay reference or amount matches
+
+    await updateOrdertoPaid({
+      orderId,
+      paymentResult: {
+        id: data.reference,
+        status: data.status || "COMPLETED",
+        email_address: data.customer?.email,
+        PricePaid: data.amount,
+      },
+    });
+
+    revalidatePath(`/order/${orderId}`);
+
+    return { success: true, message: "Order marked as paid" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
+  }
+}
+
+//update order to Paid
+export async function updateOrdertoPaid({
   orderId,
   paymentResult,
 }: {
@@ -268,47 +295,6 @@ type SalesDataType = {
   month: string;
   totalSales: number;
 }[];
-
-// // Get sales data and order summary
-// export async function getOrderSummary() {
-//   // Get counts for each resource
-//   const ordersCount = await prisma.order.count();
-//   const productsCount = await prisma.product.count();
-//   const usersCount = await prisma.user.count();
-
-//   // Calculate the total sales
-//   const totalSales = await prisma.order.aggregate({
-//     _sum: { totalPrice: true },
-//   });
-
-//   // Get monthly sales
-//   const salesDataRaw = await prisma.$queryRaw<
-//     Array<{ month: string; totalSales: Prisma.Decimal }>
-//   >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
-
-//   const salesData: SalesDataType = salesDataRaw.map((entry) => ({
-//     month: entry.month,
-//     totalSales: Number(entry.totalSales),
-//   }));
-
-//   // Get latest sales
-//   const latestSales = await prisma.order.findMany({
-//     orderBy: { createdAt: "desc" },
-//     include: {
-//       user: { select: { name: true } },
-//     },
-//     take: 6,
-//   });
-
-//   return {
-//     ordersCount,
-//     productsCount,
-//     usersCount,
-//     totalSales,
-//     latestSales,
-//     salesData,
-//   };
-// }
 
 export async function getOrderSummary() {
   // Get counts for each resource
@@ -436,3 +422,44 @@ export async function UpdateOrdertoDelivered(orderId: string) {
     return { success: false, message: formatError(error) };
   }
 }
+
+// // Get sales data and order summary
+// export async function getOrderSummary() {
+//   // Get counts for each resource
+//   const ordersCount = await prisma.order.count();
+//   const productsCount = await prisma.product.count();
+//   const usersCount = await prisma.user.count();
+
+//   // Calculate the total sales
+//   const totalSales = await prisma.order.aggregate({
+//     _sum: { totalPrice: true },
+//   });
+
+//   // Get monthly sales
+//   const salesDataRaw = await prisma.$queryRaw<
+//     Array<{ month: string; totalSales: Prisma.Decimal }>
+//   >`SELECT to_char("createdAt", 'MM/YY') as "month", sum("totalPrice") as "totalSales" FROM "Order" GROUP BY to_char("createdAt", 'MM/YY')`;
+
+//   const salesData: SalesDataType = salesDataRaw.map((entry) => ({
+//     month: entry.month,
+//     totalSales: Number(entry.totalSales),
+//   }));
+
+//   // Get latest sales
+//   const latestSales = await prisma.order.findMany({
+//     orderBy: { createdAt: "desc" },
+//     include: {
+//       user: { select: { name: true } },
+//     },
+//     take: 6,
+//   });
+
+//   return {
+//     ordersCount,
+//     productsCount,
+//     usersCount,
+//     totalSales,
+//     latestSales,
+//     salesData,
+//   };
+// }

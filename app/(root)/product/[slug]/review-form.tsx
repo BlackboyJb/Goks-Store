@@ -75,6 +75,8 @@ const ReviewForm = ({
     const onSubmit: SubmitHandler<z.infer<typeof insertReviewSchema>> = async (values) => {
         const res = await createUpdateReview({ ...values, productId });
         if (!res.success) {
+            toast.success(res.message);
+        } else {
             toast.error(res.message);
         }
         setOpen(false);

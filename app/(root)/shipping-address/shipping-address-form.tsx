@@ -60,9 +60,9 @@ const ShippingAddressForm = ({ address }: { address: shippingAddress }) => {
         startTransition(async () => {
             const res = await updateUserAddress(values);
             if (!res.success) {
-                toast.success(res.message);
-            } else {
                 toast.error(res.message);
+            } else {
+                toast.success(res.message);
             }
 
             router.push("/payment-method");

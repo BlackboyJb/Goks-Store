@@ -17,6 +17,7 @@ import { Order } from "@/types";
 import Link from "next/link";
 import Image from "next/image";
 import { toast } from "sonner";
+
 import { FormatCurrency } from "@/lib/utils";
 import {
     PayPalButtons,
@@ -29,17 +30,23 @@ import {
     UpdateOrdertoPaidonCOD,
     UpdateOrdertoDelivered
 } from "@/lib/actions/order.action";
+import { approveBudPayOrder } from "@/lib/actions/order.action";
+import BudPayButtonComponent from "@/lib/budpay";
 
 
 const OrderDetailsTable = ({
     order,
     paypalClientId,
-    isAdmin
+    isAdmin,
+    budpayApiKey
+
 }: {
     order: Order;
     paypalClientId: string;
     isAdmin: boolean
+    budpayApiKey: string;
 }) => {
+
     const {
         id,
         shippingAddress,
@@ -70,22 +77,25 @@ const OrderDetailsTable = ({
         const res = await createPaypalOrder(order.id);
 
         if (!res.success) {
-            toast.success(res.message);
-        } else {
             toast.error(res.message);
+        } else {
+            toast.success(res.message);
         }
 
         return res.data;
     };
 
+    const generateUniqueReference = (orderId: string) => {
+        return `BUD_${orderId}_${Date.now()}`; // Combines order ID and current timestamp
+    };
 
     const handleApprovePayPalOrder = async (data: { orderID: string }) => {
         const res = await approvePayPalOrder(order.id, data)
 
         if (!res.success) {
-            toast.success(res.message);
-        } else {
             toast.error(res.message);
+        } else {
+            toast.success(res.message);
         }
     }
 
@@ -98,9 +108,9 @@ const OrderDetailsTable = ({
                 const res = await UpdateOrdertoPaidonCOD(order.id)
 
                 if (!res.success) {
-                    toast.success(res.message);
-                } else {
                     toast.error(res.message);
+                } else {
+                    toast.success(res.message);
                 }
             })}>
                 {isPending ? 'Processing...' : 'Mark as Paid'}
@@ -117,15 +127,43 @@ const OrderDetailsTable = ({
                 const res = await UpdateOrdertoDelivered(order.id)
 
                 if (!res.success) {
-                    toast.success(res.message);
-                } else {
                     toast.error(res.message);
+                } else {
+                    toast.success(res.message);
                 }
             })}>
                 {isPending ? 'Processing...' : 'Mark as Delivered'}
             </Button>
         )
     }
+
+
+    //Budpay Config 
+    const reference = generateUniqueReference(id.toString());
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handlePaymentComplete = async (data: any) => {
+        try {
+            const res = await approveBudPayOrder(order.id, data); // new function to call server-side
+            if (res.success) {
+                toast.success("Order has been paid");
+            } else {
+                toast.error(res.message);
+            }
+        } catch (err) {
+            console.error(err);
+            toast.error("Something went wrong");
+        }
+    };
+
+
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const handlePaymentCancel = (data: any) => {
+        console.log('Payment cancelled:', data);
+        toast.error('Payment cancelled');
+    };
+
+
 
     return (
         <>
@@ -237,6 +275,29 @@ const OrderDetailsTable = ({
                                     </PayPalScriptProvider>
                                 </div>
                             )}
+                            {/* BudPay Button */}
+                            {!isPaid && paymentMethod === "Budpay" && (
+                                <div>
+                                    <BudPayButtonComponent
+                                        apiKey={budpayApiKey}
+                                        amount={Number(totalPrice)}
+                                        currency="NGN"
+                                        reference={reference}
+                                        customer={{
+                                            email: order?.user?.email,
+                                            first_name: order?.user?.name,
+                                            last_name: '',
+                                            phone: '',
+                                        }}
+                                        // callbackUrl={`/order/${order.id}`}
+                                        onComplete={handlePaymentComplete}
+                                        onCancel={handlePaymentCancel}
+                                        text="Pay with BudPay"
+                                        className="w-full py-2 px-4 bg-[#6C63FF] text-white rounded hover:bg-[#5a52cc] transition"
+                                    />
+                                </div>
+                            )}
+
                             {/* cash On Delivery */}
                             {isAdmin && !isPaid && paymentMethod === 'Cash On Delivery' && (
                                 <MarkasPaidButton />
@@ -244,6 +305,7 @@ const OrderDetailsTable = ({
                             {isAdmin && isPaid && !isDelivered && (
                                 <MarkasDeliveredButton />
                             )}
+
                         </CardContent>
                     </Card>
                 </div>

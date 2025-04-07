@@ -15,10 +15,10 @@ const DeleteDialogPage = ({ id, action }: { id: string; action: (id: string) => 
         startTransition(async () => {
             const res = await action(id)
             if (!res.success) {
-                toast.success(res.message);
+                toast.error(res.message);
             } else {
                 setOpen(false)
-                toast.error(res.message);
+                toast.success(res.message);
             }
         })
     }

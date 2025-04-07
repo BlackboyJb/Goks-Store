@@ -41,9 +41,9 @@ const PaymentMethodForm = ({
             const res = await updatePaymentMethod(value);
 
             if (!res.success) {
-                toast.success(res.message);
-            } else {
                 toast.error(res.message);
+            } else {
+                toast.success(res.message);
             }
             return;
         });
