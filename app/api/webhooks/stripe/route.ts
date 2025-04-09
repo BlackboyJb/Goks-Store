@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   );
 
   //check for successful payment
-  if (event.type === "charge.succeed") {
+  if (event.type === "charge.succeeded") {
     const { object } = event.data;
 
     //update Order status
