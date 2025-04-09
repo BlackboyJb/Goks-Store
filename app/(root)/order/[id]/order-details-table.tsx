@@ -32,19 +32,20 @@ import {
 } from "@/lib/actions/order.action";
 import { approveBudPayOrder } from "@/lib/actions/order.action";
 import BudPayButtonComponent from "@/lib/budpay";
-
+import StripePayments from "@/lib/stripePayments";
 
 const OrderDetailsTable = ({
     order,
     paypalClientId,
     isAdmin,
-    budpayApiKey
-
+    budpayApiKey,
+    stripeClientSecret
 }: {
     order: Order;
     paypalClientId: string;
     isAdmin: boolean
     budpayApiKey: string;
+    stripeClientSecret: string | null
 }) => {
 
     const {
@@ -140,7 +141,6 @@ const OrderDetailsTable = ({
 
     //Budpay Config 
     const reference = generateUniqueReference(id.toString());
-
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handlePaymentComplete = async (data: any) => {
         try {
@@ -263,7 +263,7 @@ const OrderDetailsTable = ({
                                 <div>{FormatCurrency(totalPrice)}</div>
                             </div>
 
-                            {/* Paypal Payment */}
+                            {/* Paypal Payment Button*/}
                             {!isPaid && paymentMethod === "PayPal" && (
                                 <div>
                                     <PayPalScriptProvider options={{ clientId: paypalClientId }}>
@@ -275,7 +275,13 @@ const OrderDetailsTable = ({
                                     </PayPalScriptProvider>
                                 </div>
                             )}
-                            {/* BudPay Button */}
+
+                            {/* Stripe Payment Button */}
+                            {!isPaid && paymentMethod === 'Stripe' && stripeClientSecret && (
+                                <StripePayments priceInCents={Number(order.totalPrice) * 100} orderId={order.id} clientSecret={stripeClientSecret} />
+                            )}
+
+                            {/* BudPay Payment Button */}
                             {!isPaid && paymentMethod === "Budpay" && (
                                 <div>
                                     <BudPayButtonComponent

@@ -1,9 +1,9 @@
 const base = process.env.PAYPAL_API_URL || "https://api-m.sandbox.paypal.com";
 
 // Function to fetch the exchange rate (Replace with your actual exchange rate API)
-async function getExchangeRate() {
+export async function getExchangeRate() {
   // Example: Hardcoded exchange rate (Replace with a dynamic API call)
-  const exchangeRate = 1530; // Example: 1 USD = 1400 NGN
+  const exchangeRate = 1600; // Example: 1 USD = 1400 NGN
   return exchangeRate;
 }
 
