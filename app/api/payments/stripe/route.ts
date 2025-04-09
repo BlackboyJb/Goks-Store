@@ -6,12 +6,12 @@ export async function POST(req: NextRequest) {
   //Build the webhook
   const event = await Stripe.webhooks.constructEvent(
     await req.text(),
-    req.headers.get("stripe-signatures") as string,
+    req.headers.get("stripe-signature") as string,
     process.env.STRIPE_WEBHOOK_SECRET as string
   );
 
   //check for successful payment
-  if (event.type === "charge.succeeded") {
+  if (event.type === "charge.succeed") {
     const { object } = event.data;
 
     //update Order status
