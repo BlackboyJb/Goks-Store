@@ -41,7 +41,7 @@ const ProfileFormPage = () => {
     const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {
         const res = await updateProfile(values);
 
-        if (res.success) {
+        if (!res.success) {
             toast.success(res.message);
 
             const newSession = {

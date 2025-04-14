@@ -41,7 +41,7 @@ const OrderDetailsTable = ({
     budpayApiKey,
     stripeClientSecret
 }: {
-    order: Order;
+    order: Omit<Order, 'paymentResult'>;
     paypalClientId: string;
     isAdmin: boolean
     budpayApiKey: string;
