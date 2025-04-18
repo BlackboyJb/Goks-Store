@@ -40,25 +40,24 @@ const ProfileFormPage = () => {
 
     const onSubmit = async (values: z.infer<typeof updateProfileSchema>) => {
         const res = await updateProfile(values);
-
-        if (!res.success) {
+        if (res?.success) {
             toast.success(res.message);
-
-            const newSession = {
-                ...session,
-                user: {
-                    ...session?.user,
-                    ...(values.name && { name: values.name }),
-                    ...(values.email && { email: values.email }),
-                },
-            };
-
-            await update(newSession);
+            await update();
         } else {
-            toast.error(res.message);
+            toast.error(res?.message || "Something went wrong");
         }
-    };
+        const newSession = {
+            ...session,
+            user: {
+                ...session?.user,
+                ...(values.name && { name: values.name }),
+                ...(values.email && { email: values.email }),
+            },
+        };
 
+        await update(newSession);
+
+    };
     return (
         <Form {...form}>
             <form
