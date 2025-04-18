@@ -64,6 +64,11 @@ const CredentialsSignInPage = () => {
                             {showPassword ? <EyeOff /> : <Eye />}
                         </button>
                     </div>
+                    <div className="mt-3 text-sm text-right">
+                        <Link href="/forgot-password" className="text-primary hover:underline">
+                            Forgot Password?
+                        </Link>
+                    </div>
                 </div>
                 <div>
                     <SignInButton />

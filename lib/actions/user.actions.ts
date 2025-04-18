@@ -9,7 +9,7 @@ import {
 } from "@/lib/validators";
 import { auth, signIn, signOut } from "@/auth";
 import { isRedirectError } from "next/dist/client/components/redirect-error";
-import { hashSync } from "bcrypt-ts-edge";
+import { hashSync, compareSync } from "bcrypt-ts-edge";
 import { prisma } from "@/db/prisma";
 import { formatError } from "../utils";
 import { shippingAddress } from "@/types";
@@ -63,17 +63,22 @@ export async function signUpUser(prevState: unknown, formData: FormData) {
       email: formData.get("email"),
       password: formData.get("password"),
       confirmPassword: formData.get("confirmPassword"),
+      securityQuestion: formData.get("securityQuestion"),
+      securityAnswer: formData.get("securityAnswer"),
     });
 
     const plainPassword = user.password;
 
     user.password = hashSync(user.password, 10);
+    const hashedAnswer = hashSync(user.securityAnswer, 10);
 
     await prisma.user.create({
       data: {
         name: user.name,
         email: user.email,
         password: user.password,
+        securityQuestion: user.securityQuestion,
+        securityAnswer: hashedAnswer,
       },
     });
 
@@ -259,5 +264,46 @@ export async function AdminUpdateUser(user: z.infer<typeof AdminUserUpdate>) {
     return { success: "true", message: "User Updated Successfully" };
   } catch (error) {
     return { success: "false", message: formatError(error) };
+  }
+}
+
+export async function verifySecurityAndResetPassword({
+  email,
+  securityAnswer,
+  newPassword,
+  confirmPassword,
+}: {
+  email: string;
+  securityAnswer: string;
+  newPassword: string;
+  confirmPassword: string;
+}) {
+  try {
+    if (newPassword !== confirmPassword) {
+      return { success: false, message: "Passwords do not match" };
+    }
+
+    const user = await prisma.user.findUnique({ where: { email } });
+
+    if (!user || !user.securityAnswer) {
+      return { success: false, message: "User not found" };
+    }
+
+    const isAnswerCorrect = compareSync(securityAnswer, user.securityAnswer);
+
+    if (!isAnswerCorrect) {
+      return { success: false, message: "Security answer is incorrect" };
+    }
+
+    const hashedPassword = hashSync(newPassword, 10);
+
+    await prisma.user.update({
+      where: { email },
+      data: { password: hashedPassword },
+    });
+
+    return { success: true, message: "Password reset successful" };
+  } catch (error) {
+    return { success: false, message: formatError(error) };
   }
 }

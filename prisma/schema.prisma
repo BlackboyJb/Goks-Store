@@ -35,23 +35,25 @@ model Product {
 }
 
 model User {
-  id            String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name          String      @default("NO NAME")
-  email         String      @unique(map: "user_email_idx")
-  emailVerified DateTime?   @db.Timestamp(6)
-  image         String?
-  password      String?
-  role          String      @default("user")
-  address       Json?       @db.Json
-  paymentMethod String?
-  createdAt     DateTime    @default(now()) @db.Timestamp(6)
-  updatedAt     DateTime    @updatedAt
-  account       Account[]
-  Session       Session[]
-  Cart          cart[]
-  Order         Order[]
-  OrderItem     OrderItem[]
-  Review        Review[]
+  id               String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name             String      @default("NO NAME")
+  email            String      @unique(map: "user_email_idx")
+  emailVerified    DateTime?   @db.Timestamp(6)
+  image            String?
+  password         String?
+  role             String      @default("user")
+  address          Json?       @db.Json
+  paymentMethod    String?
+  createdAt        DateTime    @default(now()) @db.Timestamp(6)
+  updatedAt        DateTime    @updatedAt
+  securityQuestion String?
+  securityAnswer   String?
+  account          Account[]
+  Session          Session[]
+  Cart             cart[]
+  Order            Order[]
+  OrderItem        OrderItem[]
+  Review           Review[]
 }
 
 model Account {
