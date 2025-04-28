@@ -5,6 +5,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import { compareSync } from "bcrypt-ts-edge";
 import { authConfig } from "./auth.config";
 import { cookies } from "next/headers";
+import GoogleProvider from "next-auth/providers/google"; // <-- Add this import
+
 // import type { NextAuthConfig } from "next-auth";
 // import { NextResponse } from "next/server";
 
@@ -54,6 +56,19 @@ export const config = {
         }
         ///if user does not exist or password does not match return null
         return null;
+      },
+    }),
+
+    // ADD GoogleProvider here
+    GoogleProvider({
+      clientId: process.env.GOOGLE_CLIENT_ID!,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      authorization: {
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
       },
     }),
   ],

@@ -9,8 +9,12 @@ import { useActionState } from "react";
 import { useFormStatus } from "react-dom";
 import { signInWithCredentials } from "@/lib/actions/user.actions";
 import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { FcGoogle } from 'react-icons/fc'
+import { useState, useEffect } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react"; // Import NextAuth's signIn method
 
 const CredentialsSignInPage = () => {
     const [data, action] = useActionState(signInWithCredentials, { success: false, message: "" });
@@ -19,7 +23,24 @@ const CredentialsSignInPage = () => {
     const togglePasswordVisibility = () => setShowPassword((prev) => !prev);
     const searchParams = useSearchParams();
     const callbackUrl = searchParams.get("callbackUrl") || "/";
+    const router = useRouter(); // ADD this inside your component
 
+    const error = searchParams.get("error"); // <--- This will catch ?error=... from URL
+
+    useEffect(() => {
+        if (error) {
+            if (error === "OAuthAccountNotLinked") {
+                toast.error("An account already exists with this email. Please sign in with the original method.");
+            } else if (error === "CredentialsSignin") {
+                toast.error("Invalid email or password. Please try again.");
+            } else {
+                toast.error("Something went wrong. Please try again.");
+            }
+
+            // After showing toast, clean the URL (remove the ?error=...)
+            router.replace("/sign-in");
+        }
+    }, [error, router]);
 
     const SignInButton = () => {
         const { pending } = useFormStatus();
@@ -28,6 +49,16 @@ const CredentialsSignInPage = () => {
                 {pending ? "Signing In..." : "Sign In"}
             </Button>
         );
+    };
+
+    // Google Sign-In handler
+    const handleGoogleSignIn = async () => {
+        const result = await signIn("google", { callbackUrl: '/sign-in', redirect: false }); // Important: redirect: false
+
+
+        if (result?.error) {
+            toast.error("An account already exists. Try signing in a different way.");
+        }
     };
 
     return (
@@ -74,6 +105,16 @@ const CredentialsSignInPage = () => {
                     <SignInButton />
                 </div>
 
+                {/* Google Sign-In Button */}
+                <Button
+                    type="button"
+                    onClick={handleGoogleSignIn}
+                    className="w-full flex items-center justify-center gap-2"
+                    variant="outline"
+                >
+                    <FcGoogle size={20} />
+                    <span>Sign in with Google</span>
+                </Button>
                 {data && !data.success && (
                     <div className="text-center text-destructive">{data.message}</div>
                 )}
