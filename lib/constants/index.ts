@@ -21,7 +21,7 @@ export const Payment_METHOD = process.env.PAYMENT_METHODS
   : ["PayPal", "Stripe", "Budpay", "Cash On Delivery"];
 
 export const DEFAULT_PAYMENT_METHOD =
-  process.env.PAYMENT_DEFAULT_METHOD || "Paypal";
+  process.env.PAYMENT_DEFAULT_METHOD || "Budpay";
 
 export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 5;
 
