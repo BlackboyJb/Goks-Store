@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { Payment_METHOD } from "./constants";
 import { SECURITY_QUESTIONS } from "./constants";
+
 // import { formatNumbertoDecimal } from "./utils";
 
 const currency = z
@@ -36,32 +37,6 @@ export const signInSchema = z.object({
   password: z.string().min(6, "Passowrd must be least six Characters"),
 });
 
-// // Schema for signing up a user
-// export const signUpSchema = z
-//   .object({
-//     name: z.string().min(3, "Name must be at least 3 characters"),
-//     email: z.string().email("Invalid email address"),
-//     password: z.string().min(6, "Password must be at least 6 characters"),
-//     confirmPassword: z
-//       .string()
-//       .min(6, "Confirm password must be at least 6 characters"),
-//     securityQuestion: z
-//       .string()
-//       .refine((val) => SECURITY_QUESTIONS.includes(val), {
-//         message: "Select a valid security question",
-//       }),
-//     securityAnswer: z
-//       .string({
-//         required_error: "Security answer is required",
-//         invalid_type_error: "Security answer must be a valid string",
-//       })
-//       .min(2, "Please enter a security answer with at least 2 characters"),
-//   })
-//   .refine((data) => data.password === data.confirmPassword, {
-//     message: "Passwords don't match",
-//     path: ["confirmPassword"],
-//   });
-
 export const signUpSchema = z
   .object({
     name: z
@@ -69,7 +44,12 @@ export const signUpSchema = z
         required_error: "Name is required",
         invalid_type_error: "Name must be a string",
       })
-      .min(3, "Name must be at least 3 characters"),
+      .min(3, "Name must be at least 3 characters")
+      .regex(/[a-zA-Z]/, "Name must contain at least one letter")
+      .regex(
+        /^[a-zA-Z\s'-]+$/,
+        "Name must only contain letters, spaces, apostrophes, or hyphens"
+      ),
 
     email: z
       .string({
@@ -228,3 +208,29 @@ export const insertReviewSchema = z.object({
     .min(1, "Rating Must be at least 1")
     .max(5, "Ratings must be at Most 5"),
 });
+
+// // Schema for signing up a user
+// export const signUpSchema = z
+//   .object({
+//     name: z.string().min(3, "Name must be at least 3 characters"),
+//     email: z.string().email("Invalid email address"),
+//     password: z.string().min(6, "Password must be at least 6 characters"),
+//     confirmPassword: z
+//       .string()
+//       .min(6, "Confirm password must be at least 6 characters"),
+//     securityQuestion: z
+//       .string()
+//       .refine((val) => SECURITY_QUESTIONS.includes(val), {
+//         message: "Select a valid security question",
+//       }),
+//     securityAnswer: z
+//       .string({
+//         required_error: "Security answer is required",
+//         invalid_type_error: "Security answer must be a valid string",
+//       })
+//       .min(2, "Please enter a security answer with at least 2 characters"),
+//   })
+//   .refine((data) => data.password === data.confirmPassword, {
+//     message: "Passwords don't match",
+//     path: ["confirmPassword"],
+//   });

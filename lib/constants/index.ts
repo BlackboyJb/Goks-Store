@@ -18,10 +18,9 @@ export const SignUpDefaultValues = {
 
 export const Payment_METHOD = process.env.PAYMENT_METHODS
   ? process.env.PAYMENT_METHODS.split(", ")
-  : ["PayPal", "Stripe", "Budpay", "Cash On Delivery"];
+  : ["Budpay", "Cash On Delivery"];
 
-export const DEFAULT_PAYMENT_METHOD =
-  process.env.PAYMENT_DEFAULT_METHOD || "PayPal";
+export const DEFAULT_PAYMENT_METHOD = process.env.PAYMENT_DEFAULT_METHOD;
 
 export const PAGE_SIZE = Number(process.env.PAGE_SIZE) || 5;
 
